@@ -12,6 +12,7 @@ class MenuButton(pygame.Surface):
         self.location = location
         self.text = text
         self.command = command
+        self.isDropdown = isDropdown
         self.text = Sources.MENU_FONT.render(text, 1, Colors.MENU_BUTTON_TEXT_COLOR)
         self.text_location = (self.size[0]/2 - self.text.get_size()[0]/2, self.size[1]/2 - self.text.get_size()[1]/2)
         self.blit(self.text, self.text_location)

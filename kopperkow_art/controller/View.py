@@ -15,7 +15,7 @@ class MainView(pygame.Surface):
         self.NEEDSREDRAW = True
 
         self.MENU = MenuBar(controller, ["File", "Edit", "Help"], [self.mainController.printHi, self.showImage, self.showImage], (width, 40))
-
+        self.CANVAS = Canvas((5, 5), (self.get_size()[0], self.get_size()[1]-self.MENU.size[1]), self.mainController)
         self.drawScreen()
 
     def showImage(self, image):
@@ -62,6 +62,7 @@ class MainView(pygame.Surface):
         self.NEEDSREDRAW = True
         self.fill(Colors.BACKGROUND)
         self.blit(self.MENU, (0,0))
+        self.blit(self.CANVAS, (self.get_size()[0]/2 - self.CANVAS.get_size()[0]/2, self.get_size()[1] - self.CANVAS.get_size()[1]))
 
     def needsRedraw(self):
         if self.NEEDSREDRAW:
@@ -113,3 +114,17 @@ class MenuBarPopup(pygame.Surface):
             print("TODO WRAP")
         else:
             pygame.Surface.__init__(self, self.size)
+
+class Canvas(pygame.Surface):
+    def __init__(self, size, mainViewSize, mainController):
+        self.size = size
+        self.cell_size = mainViewSize[1]/size[1]
+        pygame.Surface.__init__(self, (self.cell_size*size[0], self.cell_size*size[1]))
+        self.redraw()
+    def redraw(self):
+        self.fill(Colors.WHITE)
+        for x in range(1, self.size[0]):
+            pygame.draw.line(self, Colors.DARK_GREY, (x * self.cell_size, 0), (x * self.cell_size, self.get_size()[1]))
+        for y in range(1, self.size[1]):
+            pygame.draw.line(self, Colors.DARK_GREY, (0, y * self.cell_size), (self.get_size()[0], y * self.cell_size))
+
