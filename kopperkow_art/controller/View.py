@@ -47,7 +47,12 @@ class MainView(pygame.Surface):
 
     def updateMouseInput(self, event):
         if (self.MENU.inBounds(event.pos)):
+            print("in")
             self.MENU.update(event)
+        else:
+            print("0K...")
+            self.CANVAS.update(event)
+            print("hmm")
 
     def updateImage(self):
         for event in pygame.event.get():
@@ -94,7 +99,7 @@ class MenuBar(pygame.Surface):
             self.buttons.append(Widgets.MenuButton(self.mainController, (5 + (x * 110),5), (100, self.get_size()[1] - 10), self.options[x], False, self.commands[x]))
 
     def inBounds(self, pos):
-        if (pos[1] <= self.size):
+        if (pos[1] <= self.size[1]):
             return True
         return False
 
@@ -118,8 +123,11 @@ class MenuBarPopup(pygame.Surface):
 class Canvas(pygame.Surface):
     def __init__(self, size, mainViewSize, mainController):
         self.size = size
+        self.color = Colors.BLACK
         self.cell_size = mainViewSize[1]/size[1]
-        pygame.Surface.__init__(self, (self.cell_size*size[0], self.cell_size*size[1]))
+        pygame.Surface.__init__(self, (self.size[0] * self.cell_size, self.size[1]*self.cell_size))
+        self.location = ((mainViewSize[0]/2 - self.get_size()[0]/2), (mainViewSize[1] - self.get_size()[1]))
+        self.MOUSEDOWN = False
         self.redraw()
     def redraw(self):
         self.fill(Colors.WHITE)
@@ -127,4 +135,16 @@ class Canvas(pygame.Surface):
             pygame.draw.line(self, Colors.DARK_GREY, (x * self.cell_size, 0), (x * self.cell_size, self.get_size()[1]))
         for y in range(1, self.size[1]):
             pygame.draw.line(self, Colors.DARK_GREY, (0, y * self.cell_size), (self.get_size()[0], y * self.cell_size))
+
+    def update(self, event):
+        eventPos = (event.pos[0] - self.location[0], event.pos[1] - self.location[1])
+        if event.type == MOUSEBUTTONDOWN:
+            self.MOUSEDOWN = True
+            self.draw((eventPos[0]/self.cell_size, eventPos[1]/self.cell_size))
+
+    def draw(self, pos):
+        newSurf = pygame.Surface((self.cell_size, self.cell_size), pygame.SRCALPHA)
+        newSurf.fill(self.color)
+        print("Draw")
+        self.blit(newSurf, (pos[0]*self.cell_size, pos[1]*self.cell_size))
 
