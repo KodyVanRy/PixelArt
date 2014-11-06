@@ -6,8 +6,8 @@ __author__ = 'Kody'
 
 pygame.init()
 
-VIEW_WIDTH = 600
-VIEW_HEIGHT = 400
+VIEW_WIDTH = 960
+VIEW_HEIGHT = 580
 DISPLAYSURF = pygame.display.set_mode((VIEW_WIDTH, VIEW_HEIGHT))
 FPSCLOCK = pygame.time.Clock()
 FPS = 40
@@ -16,7 +16,7 @@ showingImage = False
 
 class MainController:
     def __init__(self, inFile="", outFile="", viewOnly=False):
-        self.myView = MainView(600, 400, self)
+        self.myView = MainView(VIEW_WIDTH, VIEW_HEIGHT, self)
         if viewOnly:
             showingImage = True
             self.myView.showImage(inFile)
@@ -32,3 +32,5 @@ class MainController:
                 if self.myView.needsRedraw():
                     DISPLAYSURF.blit(self.myView, (0,0))
                     pygame.display.update()
+    def printHi(self):
+        print('hi')

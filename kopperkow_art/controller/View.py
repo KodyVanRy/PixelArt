@@ -1,6 +1,7 @@
 import pygame, MainController, sys
 from pygame.locals import *
-from Libraries import Colors, Sources
+from Libraries import Colors, Sources, Widgets
+from kopperkow_art.controller.Libraries.Widgets import MenuButton
 
 __author__ = 'Kody'
 
@@ -13,7 +14,7 @@ class MainView(pygame.Surface):
         self.visibleWindows = None
         self.NEEDSREDRAW = True
 
-        self.MENU = MenuBar(controller, (width, 40))
+        self.MENU = MenuBar(controller, ["File", "Edit", "Help"], [self.mainController.printHi, self.showImage, self.showImage], (width, 40))
 
         self.drawScreen()
 
@@ -36,7 +37,8 @@ class MainView(pygame.Surface):
                     self.updateMouseInput(event)
                 elif event.type == MOUSEBUTTONUP:
                     self.MOUSE_IS_DOWN = False
-                elif event.type == MOUSEMOTION and self.MOUSE_IS_DOWN:
+                    self.updateMouseInput(event)
+                elif event.type == MOUSEMOTION:
                     self.updateMouseInput(event)
                     self.drawScreen()
 
@@ -45,8 +47,7 @@ class MainView(pygame.Surface):
 
     def updateMouseInput(self, event):
         if (self.MENU.inBounds(event.pos)):
-            print("in menu")
-        print(event.pos)
+            self.MENU.update(event)
 
     def updateImage(self):
         for event in pygame.event.get():
@@ -70,26 +71,35 @@ class MainView(pygame.Surface):
             return False
 
 class MenuBar(pygame.Surface):
-    def __init__(self, mainController, size):
+    def __init__(self, mainController, options, commands, size):
         pygame.Surface.__init__(self, size)
         self.size = size
         self.mainController = mainController
         self.popUpMenu = None
-        self.options = ["File", "Edit", "Help"]
+        self.buttons = []
+        self.options = options
+        self.commands = commands
+
+        self.setupButtons()
 
         self.drawMenu()
     def drawMenu(self):
         self.fill(Colors.MENU_BACKGROUND)
-        buttonSurf = pygame.Surface((100, 30))
-        buttonSurf.fill(Colors.MENU_BUTTON_BACKGROUND)
-        buttonText = Sources.MENU_FONT.render(self.options[0], 1, Colors.MENU_BUTTON_TEXT_COLOR)
-        buttonSurf.blit(buttonText, (buttonSurf.get_size()[0]/2 - buttonText.get_size()[0]/2, buttonSurf.get_size()[1]/2 - buttonText.get_size()[1]/2))
-        self.blit(buttonSurf, (5, 5))
+        for button in self.buttons:
+            self.blit(button, button.location)
+
+    def setupButtons(self):
+        for x in range(len(self.options)):
+            self.buttons.append(Widgets.MenuButton(self.mainController, (5 + (x * 110),5), (100, self.get_size()[1] - 10), self.options[x], False, self.commands[x]))
 
     def inBounds(self, pos):
         if (pos[1] <= self.size):
             return True
         return False
+
+    def update(self, event):
+        for button in self.buttons:
+            button.update(event)
 
 class MenuBarPopup(pygame.Surface):
     def __init__(self, mainController, size, options, commands=[]):

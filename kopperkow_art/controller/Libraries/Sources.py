@@ -7,3 +7,6 @@ pygame.init()
 
 MENU_FONT = pygame.font.SysFont("Arial", 16)
 
+def getResources():
+    return "Resources"
+

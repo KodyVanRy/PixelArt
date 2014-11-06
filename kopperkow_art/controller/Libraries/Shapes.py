@@ -8,6 +8,7 @@ def drawOutsetRect(surf, size, outset, borderColor, color):
     surf ->
     :rtype : pygame.Surface
     """
+    surf = pygame.Surface(surf.get_size())
     surf.fill(color)
     a, b = color, borderColor
     rate = (
