@@ -14,8 +14,8 @@ class MainView(pygame.Surface):
         self.visibleWindows = None
         self.NEEDSREDRAW = True
 
-        self.MENU = MenuBar(controller, ["File", "Edit", "Help"], [self.mainController.printHi, self.showImage, self.showImage], (width, 40))
-        self.CANVAS = Canvas((5, 5), (self.get_size()[0], self.get_size()[1]-self.MENU.size[1]), self.mainController)
+        self.MENU = MenuBar(controller, ["File", "Edit", "Help"], [self.mainController.printHi, self.mainController.printHi, self.mainController.printHi], (width, 40))
+        self.CANVAS = Canvas((8, 8), self.get_size(), self.MENU.get_size(), self.mainController)
         self.drawScreen()
 
     def showImage(self, image):
@@ -47,12 +47,9 @@ class MainView(pygame.Surface):
 
     def updateMouseInput(self, event):
         if (self.MENU.inBounds(event.pos)):
-            print("in")
             self.MENU.update(event)
         else:
-            print("0K...")
             self.CANVAS.update(event)
-            print("hmm")
 
     def updateImage(self):
         for event in pygame.event.get():
@@ -67,7 +64,7 @@ class MainView(pygame.Surface):
         self.NEEDSREDRAW = True
         self.fill(Colors.BACKGROUND)
         self.blit(self.MENU, (0,0))
-        self.blit(self.CANVAS, (self.get_size()[0]/2 - self.CANVAS.get_size()[0]/2, self.get_size()[1] - self.CANVAS.get_size()[1]))
+        self.blit(self.CANVAS, self.CANVAS.location)
 
     def needsRedraw(self):
         if self.NEEDSREDRAW:
@@ -121,12 +118,13 @@ class MenuBarPopup(pygame.Surface):
             pygame.Surface.__init__(self, self.size)
 
 class Canvas(pygame.Surface):
-    def __init__(self, size, mainViewSize, mainController):
+    def __init__(self, size, mainViewSize, menuSize, mainController):
         self.size = size
         self.color = Colors.BLACK
+        mainViewSize = (mainViewSize[0], mainViewSize[1] - menuSize[1])
         self.cell_size = mainViewSize[1]/size[1]
         pygame.Surface.__init__(self, (self.size[0] * self.cell_size, self.size[1]*self.cell_size))
-        self.location = ((mainViewSize[0]/2 - self.get_size()[0]/2), (mainViewSize[1] - self.get_size()[1]))
+        self.location = ((mainViewSize[0]/2 - self.get_size()[0]/2), menuSize[1])
         self.MOUSEDOWN = False
         self.redraw()
     def redraw(self):
@@ -138,9 +136,15 @@ class Canvas(pygame.Surface):
 
     def update(self, event):
         eventPos = (event.pos[0] - self.location[0], event.pos[1] - self.location[1])
+        if event.type == MOUSEBUTTONDOWN: print eventPos
         if event.type == MOUSEBUTTONDOWN:
             self.MOUSEDOWN = True
             self.draw((eventPos[0]/self.cell_size, eventPos[1]/self.cell_size))
+        elif event.type == MOUSEMOTION and self.MOUSEDOWN:
+            self.draw((eventPos[0]/self.cell_size, eventPos[1]/self.cell_size))
+        elif event.type == MOUSEBUTTONUP:
+            self.MOUSEDOWN = False
+
 
     def draw(self, pos):
         newSurf = pygame.Surface((self.cell_size, self.cell_size), pygame.SRCALPHA)
@@ -148,3 +152,43 @@ class Canvas(pygame.Surface):
         print("Draw")
         self.blit(newSurf, (pos[0]*self.cell_size, pos[1]*self.cell_size))
 
+class PopupWindow(pygame.Surface):
+    #TODO
+    YES_NO_DIALOG = "yndialog"
+    OPTION_DIALOG = "optdialog"
+    COLOR_DIALOG = "coldialog"
+    def __init__(self, type, message, mainViewSize, options=[], entries=[]):
+        self.type = type
+        self.message = message
+        self.options = options
+        self.entries = entries
+        self.size = self.getSize()
+        pygame.Surface.__init__(self, self.size)
+        self.fill(Colors.BLUE)
+    def update(self):
+        #TODO fix this method PopupWindow.update()
+        pass
+    def draw(self):
+        if self.type == self.YES_NO_DIALOG:
+            self.drawYNDIALOG()
+        elif self.type == self.OPTION_DIALOG:
+            self.drawOPTDIALOG()
+        elif self.type == self.COLOR_DIALOG:
+            self.drawCOLDIALOG()
+    def drawYNDIALOG(self):
+        #TODO
+        pass
+    def drawOPTDIALOG(self):
+        #TODO
+        pass
+    def drawCOLDIALOG(self):
+        #TODO
+        pass
+    def getSize(self):
+        #TODO fix this method getSize
+        if self.type == self.YES_NO_DIALOG:
+            return (200, 100)
+        elif self.type == self.OPTION_DIALOG:
+            return (200, 400)
+        elif self.type == self.COLOR_DIALOG:
+            return (400, 150)
