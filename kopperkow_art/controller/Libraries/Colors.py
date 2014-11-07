@@ -11,3 +11,5 @@ MENU_BUTTON_TEXT_COLOR = ( 25,  25,  25)
 BLACK                  = (  0,   0,   0)
 BLUE                   = (  0,   0, 255)
 WHITE                  = (255, 255, 255)
+TEXT_BOX_BACKGROUND    = DARK_GREY
+TEXT_BOX_OUTLINE       = BLACK

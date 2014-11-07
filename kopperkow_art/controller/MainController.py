@@ -25,6 +25,8 @@ class MainController:
     def run(self):
         while True:
             FPSCLOCK.tick(FPS)
+            if (FPSCLOCK.get_fps() < 30):
+                print("Running slow...\nFPS: " + str(FPSCLOCK.get_fps()))
             if (showingImage):
                 self.myView.updateImage()
             else:
